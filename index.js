@@ -150,11 +150,18 @@ class Node {
 }
 Node.EMPTY = new Node(0, EMPTY_NODE_DATA, () => EMPTY_NODE_DATA, 1, 0)
 const createErrorNode = (handler, getErrorPromiseReject) => {
-  const res = new Node(-1, {
-    [ERROR_TYPE_PROP]: ERROR_CATCHER,
-    handler
-  }, 1, 0, getErrorPromiseReject)
-  return res
+  const cost = 1
+  const initialMoney = 0
+  return new Node(
+    ERROR_CATCHER,
+    {
+      [ERROR_TYPE_PROP]: ERROR_CATCHER,
+      handler
+    },
+    cost,
+    initialMoney,
+    getErrorPromiseReject
+  )
 }
 const doTasks = R.curry(async (
     tasks, 
@@ -204,9 +211,10 @@ const doTasks = R.curry(async (
     })
   })
   if (nodes.some(node => node.isImpossible())) {
-    throw new Error('Impossible to solve these tasks')
+    const ids = nodes.filter(node => node.isImpossible()).map(({id})=>id)
+    throw new Error(`Impossible to solve these tasks:\n${ids.join(', ')}`)
   }
-  const nodePromises = Promise.all(nodes.map(node => node.getPromise()))
+  const nodePromises = Promise.all(nodes.map(node => node.getPromise())).catch(errorPromiseReject)
 
   const actualTimeout = typeof timeout === 'function'
     ? timeout({ tasks })
