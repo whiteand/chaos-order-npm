@@ -233,7 +233,8 @@ const doTasks = R.curry(async (
   
 })
 module.export = {
-  doTasks // async (tasks, { getId, getDependencies, getCatchers, timeout}, doAction: function(data, state, amount): *)
+  doTasks, // async (tasks, { getId, getDependencies, getCatchers, timeout}, doAction: function(data, state, amount): *)
+  wait 
 }
 
 // const tasks = [
